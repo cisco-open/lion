@@ -3,6 +3,7 @@ import pandas as pd
 from drain3 import TemplateMiner
 from dateutil import parser
 import time
+import csv
 
 log_format = '<Date> <Time> <Pid> <Level> <Component>: <Content>'
 
@@ -301,12 +302,52 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
             'Parameters_without_categories': parameters_wo,
         })
         pd.concat([df, logdf], axis=1)
-        print(f'{len(log_messages)}')
+        #print(f'{len(log_messages)}')
     except:
         df = None
         print(f'length of arrays : {len(timestamps), len(processes), len(log_texts), len(event_templates), len(original_logs), len(unix_times), len(normalized_timestamps)}')
 
     return df
+
+
+
+def detect_delimiter(filename, sample_size=1024):
+    with open(filename, 'r') as f:
+        sample = f.read(sample_size)
+        sniffer = csv.Sniffer()
+        try:
+            dialect = sniffer.sniff(sample)
+            return dialect.delimiter
+        except csv.Error:
+            # Couldn't determine delimiter
+            return None
+        
+def is_csv_content(filename, delimiter=None):
+    if not delimiter:
+        delimiter = detect_delimiter(filename)
+        if not delimiter:
+            delimiter = ','
+    try:
+        with open(filename, 'r') as f:
+            reader = csv.reader(f, delimiter=delimiter)
+            for _ in reader:  # Just iterate over a few rows to check
+                break
+        return True
+    except csv.Error:
+        return False
+
+def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',indir='.'):
+    
+    logfileName = os.path.expanduser(indir) + logName
+    if logfileName.lower().endswith('.csv'):
+        df = pd.read_csv(logfileName)
+    else:
+        log_format = get_log_format(logName)
+        headers, pattern = generate_logformat_regex(log_format)
+        df = parse_log_file(logfileName, pattern=pattern, headers=headers)
+        #print(df.head())
+    
+    df.to_csv(os.path.join(outdir,logName + '_templates.csv'), index=True)
 
 # Example usage
 #log_file_path = "path_to_your_log_file.log"
@@ -317,10 +358,11 @@ if __name__ == '__main__':
     indir =  os.path.expanduser('~/.dataset/') #'<input_directory>'
     outdir = '../output/hdfs_expt/'  # The output directory of parsing results '<output_directory>'
     logName = 'OpenSSH_2k.log' #HDFS.log
-    log_format = get_log_format(logName)
-    headers, pattern = generate_logformat_regex(log_format)
+    parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=';',outdir='.',indir=indir)
+    #log_format = get_log_format(logName)
+    #headers, pattern = generate_logformat_regex(log_format)
 #headers, pattern = generate_logformat_regex(log_format)
 #print(pattern)
 #print(pattern)
-    df = parse_log_file(indir+logName, pattern=pattern, headers=headers)
-    print(df.head())
+    #df = parse_log_file(indir+logName, pattern=pattern, headers=headers)
+    #  print(df.head())
