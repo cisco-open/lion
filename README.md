@@ -1,6 +1,6 @@
 # Log Analysis 
 
-> This is a stable version, last modified on Sep 10th, 2021 
+> This is a stable version, last modified on Sep 10th, 2023
 
 &nbsp; &nbsp;
 
@@ -15,7 +15,7 @@ Will need to install libraries, including:
 
 > A conda `.env` file containing all required packages will be added shortly! 
 
-***IMPORTANT: please run `pip install protobuf==3.20.0`, as streamlit and matrixprofile are not compatible unless protobuf==3.20.X***
+***IMPORTANT: Run `pip install protobuf==3.20.0`, as streamlit and matrixprofile are not compatible otherwise***
 
 Once all necessary pacakges are installed, this project should run with ease! 
 
