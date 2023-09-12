@@ -6,7 +6,7 @@ from gateway.matrix_profile import MatrixProfileAnalyzer
 
 
 def colL(): 
-    st.title("Log Analyzer 🥳")
+    st.title("Log with LION 🦁🥳")
 
 
     """ Section 1: File Upload """
@@ -40,7 +40,7 @@ def colL():
     with min_col2: 
         st.session_state.demo_state['comps_to_see'] = st.multiselect(
             'Inspection Selector - Which comps to see?',
-            ['Motifs', 'Discords'], ['Discords'])
+            ['Graphs', 'Motifs', 'Discords'], [])
     
     with st.expander("What is a Matrix Profile? Who is a Motif?? And why is a Discord???"): 
         st.markdown("""Matrix Profile is a unique tool to analyze time-series data. It is useful to efficiently determine motifs and discords. 

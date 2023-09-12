@@ -353,18 +353,10 @@ def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',
 
 # Example usage
 #log_file_path = "path_to_your_log_file.log"
+
 if __name__ == '__main__':
-    indir =  os.path.expanduser('~/.dataset/hdfs/') #'<input_directory>'
-    outdir = '../output/hdfs_expt/'  # The output directory of parsing results '<output_directory>'
-    logName = 'HDFS_2k.log' #HDFS.log
-    indir =  os.path.expanduser('~/.dataset/') #'<input_directory>'
-    outdir = '../output/hdfs_expt/'  # The output directory of parsing results '<output_directory>'
-    logName = 'OpenSSH_2k.log' #HDFS.log
+
+    indir = r'C:\Users\addeepak\Desktop\LogAnalysis\input_logs\\'
+    outdir = r'C:\Users\addeepak\Desktop\LogAnalysis\profile_figs\\'
+
     parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=';',outdir='.',indir=indir)
-    #log_format = get_log_format(logName)
-    #headers, pattern = generate_logformat_regex(log_format)
-#headers, pattern = generate_logformat_regex(log_format)
-#print(pattern)
-#print(pattern)
-    #df = parse_log_file(indir+logName, pattern=pattern, headers=headers)
-    #  print(df.head())

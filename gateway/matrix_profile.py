@@ -41,13 +41,23 @@ class MatrixProfileAnalyzer():
 
     """ Extracts and returns profile and discords (may fail if len(df) is too small) """
 
-    def get_discords(self, k=3, windows=None, subset=None): 
+    def get_discords(self, k=4, windows=None, subset=None): 
         try: 
+            exclusion_zone = int(len(self.event_series)/10)
+
             if windows: profile = mp.compute(self.event_series, windows)
             else: profile = mp.compute(self.event_series)
 
-            profile = mp.discover.discords(profile, k=k)
+            profile = mp.discover.discords(profile, k=k, exclusion_zone=exclusion_zone)
             discords = profile['discords']
+            print(f"(matrix_profile.py) DISCORDS w/ exclusion {exclusion_zone}: {discords}")
+
+            # for i in range(15): 
+            #     exclusion_zone = (i+1)*20
+            #     profile = mp.discover.discords(profile, k=k, exclusion_zone=exclusion_zone)
+            #     discords = profile['discords']
+            #     print(f"(matrix_profile.py) DISCORDS w/ exclusion {exclusion_zone}: {discords}")
+
 
             return profile, discords
         
@@ -58,10 +68,10 @@ class MatrixProfileAnalyzer():
 
     """ Extracts and returns profile and motifs (may fail if len(df) is too small) """
 
-    def get_motifs(self, subset=None): 
+    def get_motifs(self, k=4, subset=None): 
         try: 
             profile = mp.compute(self.event_series)
-            profile = mp.discover.motifs(profile)
+            profile = mp.discover.motifs(profile, k=k)
 
             motifs = profile['motifs']
             return profile, motifs

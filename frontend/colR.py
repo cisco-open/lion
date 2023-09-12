@@ -3,6 +3,8 @@ import streamlit as st
 
 from gateway.openai_summ import generate_log_summary
 
+from frontend.colE import colE
+from frontend.colV import colV
 
 
 def colR(): 
@@ -29,8 +31,17 @@ def colR():
             st.session_state.demo_state['discords'] = [] 
 
 
+        # Case 2: No motifs/discords have been selected in viewer
 
-        # Case 2: Displaying motifs/discord viewer 
+        elif len(st.session_state.demo_state['comps_to_see']) == 0: 
+            colE()
+
+        # Case 3: Showing graph analysis pane 
+
+        elif 'Graphs' in st.session_state.demo_state['comps_to_see']: 
+            colV()
+
+        # Case 4: Displaying motifs/discord viewer 
 
         elif len(st.session_state.demo_state['motifs']) != 0 and len(st.session_state.demo_state['discords']) != 0: 
             
@@ -98,16 +109,16 @@ def colR():
 
                     extracted_variables = set() 
 
-                    for idx, row in entry["log_df"].iterrows(): 
+                    for i, row in entry["log_df"].iterrows(): 
                         template = row["EventTemplate"]
                         content = row["Content"]
 
                         template_words = template.split(" ")
                         content_words = content.split(" ") 
 
-                        for idx, word in enumerate(template_words):
+                        for j, word in enumerate(template_words):
                                 if "<*>" in word: 
-                                    extracted_variables.add(content_words[idx])
+                                    extracted_variables.add(content_words[j])
 
 
                     if "" in extracted_variables: extracted_variables.remove("")
@@ -126,7 +137,6 @@ def colR():
 
                     tab.caption("Currently, some of the discords may overlap. This is a feature we are working to resolve!")
 
-
                     gpt_analysis = tab.button("Submit for GPT Analysis", key=idx)
 
                     if gpt_analysis: 
@@ -135,5 +145,6 @@ def colR():
                             res = generate_log_summary(st.session_state.demo_state['api_key'], log_data_str)
 
                             tab.subheader(res) 
+
 
 

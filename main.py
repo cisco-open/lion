@@ -1,6 +1,6 @@
 """
 
-Log Analysis Demo - Stable, 9/10
+Log Analysis Demo - Stable, 9/11
 
 IMPORTANT: pip install protobuf==3.20.0
 Will NOT work (streamlit and matrix profile are not compatible unless 3.20.X)
@@ -19,6 +19,8 @@ import os
 
 
 st.set_page_config(page_title='Log Analysis', layout="wide")
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 if 'demo_state' not in st.session_state: 
     st.session_state.demo_state = INITIAL_STATE 
