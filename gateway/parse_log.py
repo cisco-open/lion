@@ -4,6 +4,8 @@ from drain3 import TemplateMiner
 from dateutil import parser
 import time
 import csv
+import re
+
 
 log_format = '<Date> <Time> <Pid> <Level> <Component>: <Content>'
 
@@ -144,8 +146,6 @@ def detect_timestamp_format(log_line):
         return timestamp
     except:
         return None
-
-import re
 
 def generate_logformat_regex(logformat):
         """ Function to generate regular expression to split log messages
@@ -310,8 +310,6 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
         print(f'length of arrays : {len(timestamps), len(processes), len(log_texts), len(event_templates), len(original_logs), len(unix_times), len(normalized_timestamps)}')
 
     return df
-
-
 
 def detect_delimiter(filename, sample_size=1024):
     with open(filename, 'r') as f:

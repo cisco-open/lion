@@ -1,19 +1,24 @@
+"""
+
+This file contains: 
+
+- def colR() {STREAMLIT}
+
+"""
+
 import re 
 import streamlit as st 
-
-from gateway.openai_summ import generate_log_summary
 
 from frontend.colE import colE
 from frontend.colV import colV
 
+from gateway.openai_summ import generate_log_summary
+
 
 def colR(): 
-    # Only display the RHS if analysis is finished running 
     if st.session_state.demo_state['analysis_finished']: 
 
-
         # Case 1: Display filtering components 
-
         if st.session_state.demo_state['filtering_string'] != "": 
             st.subheader(f"Filtered Log (entries reduced to: {len(st.session_state.demo_state['df'])})")
             st.dataframe(st.session_state.demo_state['df'],  hide_index=True, column_order=("LineId", "TimeFull", "Pid", "Component", "EventId", "Content"), column_config={"EventTemplate": None})
@@ -32,14 +37,10 @@ def colR():
 
 
         # Case 2: No motifs/discords have been selected in viewer
-
-        elif len(st.session_state.demo_state['comps_to_see']) == 0: 
-            colE()
+        elif len(st.session_state.demo_state['comps_to_see']) == 0: colE()
 
         # Case 3: Showing graph analysis pane 
-
-        elif 'Graphs' in st.session_state.demo_state['comps_to_see']: 
-            colV()
+        elif 'Graphs' in st.session_state.demo_state['comps_to_see']: colV()
 
         # Case 4: Displaying motifs/discord viewer 
 

@@ -6,7 +6,7 @@ This dictionary is stored in `st.session_state.demo_state`
 """
 
 INITIAL_STATE =  {
-    "api_key" : "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", 
+    "api_key" : "<YOUR-API-KEY-HERE", 
     "dump_folder" : "file_dump/",
 
     "selected_file" : None, 
