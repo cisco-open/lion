@@ -5,6 +5,7 @@
 Put simply, there's a lack of love for logs 😥. Developers and enterprises primiarily look at logs for root-cause analysis, but *there's so much more!* From understanding code structure and system state to identifying user activity and weaknesses across log files, LION is our solution to generate powerful insights into log files. 
 
 Our goal? Can we do this in a *zero-shot, conversational* approach with current technology? 
+
 Continue reading to find out! 
 
 &nbsp; &nbsp;
