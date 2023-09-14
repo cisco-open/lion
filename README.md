@@ -50,6 +50,7 @@ These are the current methods we have that are documented with docstrings. Ready
 
 >   * ***Coming soon!***
 
+
 &nbsp; &nbsp;
 
 ## Installation 

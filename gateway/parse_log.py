@@ -253,7 +253,9 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
             match = pattern.search(line.strip()) if pattern is not None else None
             message = [match.group(header) for header in headers]
             log_messages.append(message)
-            linecount += 1
+            if cnt == 20000000:
+                print(message)
+                cnt += 1
         except Exception as e:
                     # print("\n", line)
                     # print(e)
@@ -301,7 +303,7 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
             'Parameters': parameters,
             'Parameters_without_categories': parameters_wo,
         })
-        pd.concat([df, logdf], axis=1)
+        df = pd.concat([df, logdf], axis=1)
         #print(f'{len(log_messages)}')
     except:
         df = None
