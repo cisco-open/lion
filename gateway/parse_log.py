@@ -295,8 +295,8 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
         logdf = pd.DataFrame(log_messages, columns=headers)
         df = pd.DataFrame({
             'Timestamp': timestamps,
-            'Log Text': log_texts,
-            'Event Template ID': event_templates,
+            'Content': log_texts,
+            'EventID': event_templates,
             'Original Log': original_logs,
             'Unix Time': unix_times,
             'Normalized Timestamp': normalized_timestamps,
@@ -354,7 +354,9 @@ def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',
 
 if __name__ == '__main__':
 
-    indir = r'C:\Users\addeepak\Desktop\LogAnalysis\input_logs\\'
-    outdir = r'C:\Users\addeepak\Desktop\LogAnalysis\profile_figs\\'
+   # indir = r'C:\Users\addeepak\Desktop\LogAnalysis\input_logs\\'
+   # outdir = r'C:\Users\addeepak\Desktop\LogAnalysis\profile_figs\\'
+   indir = '../input_logs/'
+   outdir = '.'
 
-    parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=';',outdir='.',indir=indir)
+   parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=';',outdir='.',indir=indir)
