@@ -79,3 +79,6 @@ To launch the analyzer, simply run `streamlit run main.py`
 A demo video will be posted soon with instructions on features/usage. 
 
 More log files can be found at loghub. Currently, robust support for OpenSSH logs.
+
+If you wish to contribute or suggest any additional funtionalities, please check out [Contributing Guidelines](/CONTRIBUTING.md)
+
