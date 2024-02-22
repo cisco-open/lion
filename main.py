@@ -37,7 +37,7 @@ from const import INITIAL_STATE
 import os 
 
 
-st.set_page_config(page_title='Log Analysis', layout="wide")
+st.set_page_config(page_title='LION - A tool for log analysis', layout="wide")
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
