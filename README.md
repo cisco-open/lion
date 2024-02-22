@@ -80,5 +80,16 @@ A demo video will be posted soon with instructions on features/usage.
 
 More log files can be found at loghub. Currently, robust support for OpenSSH logs.
 
+
+## Contributing & Future Directions
+
+> We have several TODO's spread out throughout our files! We will continue working in these directions to improve BUFFALO, adjusting as needed based on our user's feedback
+
+We intend to add functionalities to the log analysis for unsupervised log analysis. 
+
 If you wish to contribute or suggest any additional funtionalities, please check out [Contributing Guidelines](/CONTRIBUTING.md)
+
+## License
+
+Please check out the [License](/LICENSE.md)for details on the License.
 
