@@ -1,6 +1,6 @@
 # LION - Log Intelligence and Optimization Network 🦁
 
-> This is a stable version, last modified in October, 2023
+> This is a stable version
 
 Put simply, there's a lack of love for logs 😥. Developers and enterprises primiarily look at logs for root-cause analysis, but *there's so much more!* From understanding code structure and system state to identifying user activity and weaknesses across log files, LION is our solution to generate powerful insights into log files. 
 
