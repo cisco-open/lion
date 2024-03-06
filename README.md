@@ -83,7 +83,7 @@ More log files can be found at loghub. Currently, robust support for OpenSSH log
 
 ## Contributing & Future Directions
 
-> We have several TODO's spread out throughout our files! We will continue working in these directions to improve BUFFALO, adjusting as needed based on our user's feedback
+> We have several TODO's spread out throughout our files! We will continue working in these directions to improve LION, adjusting as needed based on our user's feedback
 
 We intend to add functionalities to the log analysis for unsupervised log analysis. 
 
