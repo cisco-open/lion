@@ -2,7 +2,7 @@ drain3==0.9.11
 matplotlib==3.8.2
 matrixprofile==1.1.10
 protobuf==3.19.0
-numpy==1.26.3
+numpy==1.26.4
 openai==1.10.0
 pandas==2.2.0
 python_dateutil==2.8.2
