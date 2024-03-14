@@ -1,11 +1,11 @@
-drain3==0.9.11
-matplotlib==3.8.2
+drain3
+matplotlib
 matrixprofile==1.1.10
-protobuf==3.19.0
-numpy==1.26.3
-openai==1.10.0
-pandas==2.2.0
-python_dateutil==2.8.2
-ruamel.base==1.0.0
-seaborn==0.13.2
-streamlit==1.21.0
+numpy
+openai
+pandas
+python_dateutil
+ruamel.base
+seaborn
+# streamlit==1.21.0
+altair==4

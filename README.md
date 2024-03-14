@@ -57,16 +57,24 @@ These are the current methods we have that are documented with docstrings. Ready
 
 Simply clone this repository. Simple as that! 
 
-Will need to install libraries, including: 
-- streamlit
-- matrixprofile 
-- openai 
+Setup Python virtual environment using the command
 
-> A conda `.env` file containing all required packages will be added shortly! 
+`python<version> -m venv <environment_name>`
 
-***IMPORTANT: Run `pip install protobuf==3.20.0`, as streamlit and matrixprofile are not compatible otherwise***
+Activate environement using the command 
+
+`source <environment_name/bin/activate`
+
+Install requirements
+
+`pip install -r requirements.txt`
+
+
+***IMPORTANT: Run `pip install streamlit` and `pip install protobuf==3.20.0`, as streamlit and matrixprofile are not compatible otherwise***
 
 Once all necessary pacakges are installed, this project should run with ease! 
+
+
 
 &nbsp; &nbsp;
 
@@ -76,7 +84,7 @@ Once all necessary pacakges are installed, this project should run with ease!
 
 To launch the analyzer, simply run `streamlit run main.py`
 
-A demo video will be posted soon with instructions on features/usage. 
+A demo video (SetupProcessVideo.webm) with instructions on features/usage. 
 
 More log files can be found at loghub. Currently, robust support for OpenSSH logs.
 
