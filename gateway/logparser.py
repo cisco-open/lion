@@ -117,7 +117,7 @@ def get_df_mask_from_filtering_string(df, filtering_string):
 
 
 
-def log_csv_to_df(path, filtering_string=None): 
+def log_csv_to_df(path=None, filtering_string=None,df=None): 
 
     """
     Reads a CSV log file into a DataFrame and performs optional filtering.
@@ -149,8 +149,10 @@ def log_csv_to_df(path, filtering_string=None):
     4    May    5  11:30:00  05-05-2016 11:30:00
 
     """
-
-    df = pd.read_csv(path)
+    if df is not None:
+        df = df
+    else:
+        df = pd.read_csv(path)
 
     YEAR = 2016 # TODO: openssh.csv doesn't have an associated year
     month_dict = {'Jan': '1', 'Feb': '2', 'Mar': '3', 'Apr': '4', 'May': '5', 'Jun': '6', 'Jul': '7', 'Aug': '8', 'Sep': '9', 'Oct': '10', 'Nov': '11', 'Dec': '12'}

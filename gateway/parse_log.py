@@ -353,7 +353,7 @@ def is_csv_content(filename, delimiter=None):
     except csv.Error:
         return False
 
-def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',indir='.'):
+def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',indir='.',save_file=True):
     
     logfileName = os.path.expanduser(indir) + logName
     if logfileName.lower().endswith('.csv'):
@@ -364,7 +364,9 @@ def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',
         df = parse_log_file(logfileName, pattern=pattern, headers=headers)
         #print(df.head())
     
-    df.to_csv(os.path.join(outdir,logName + '_templates.csv'), index=True)
+        df.to_csv(os.path.join(outdir,logName + '_templates.csv'), index=True)
+        return df
+    
 
 # Example usage
 #log_file_path = "path_to_your_log_file.log"
@@ -373,7 +375,7 @@ if __name__ == '__main__':
 
    # indir = r'C:\Users\addeepak\Desktop\LogAnalysis\input_logs\\'
    # outdir = r'C:\Users\addeepak\Desktop\LogAnalysis\profile_figs\\'
-   indir = '../input_logs/'
+   indir = '.'
    outdir = '.'
 
    parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=';',outdir='.',indir=indir)
