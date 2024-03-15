@@ -28,7 +28,10 @@ import os
 
 from gateway.logparser import log_csv_to_df
 from gateway.matrix_profile import MatrixProfileAnalyzer
+from gateway.parse_log import parse_log_file_from_file
 
+def get_file_extension(file_path):
+    return os.path.splitext(file_path)[1]
 
 def colL(): 
     st.title("Log with LION 🦁🥳")
@@ -51,7 +54,7 @@ def colL():
         print(f"(colL.py) Successfully stored log to: {save_path}")
 
     st.divider() 
-
+    
 
     """ Section 2: Button, Selector, More Info """
 
@@ -85,7 +88,14 @@ def colL():
         else: 
             # First, we convert the log file into a dataframe 
             with st.spinner("Putting log into DF..."):
-                st.session_state.demo_state['df'] = log_csv_to_df(st.session_state.demo_state['selected_file_path'], filtering_string=st.session_state.demo_state['filtering_string'])
+                extension = get_file_extension(st.session_state.demo_state['selected_file_path'])
+                if extension == ".log":
+                    
+                    df = parse_log_file_from_file(st.session_state.demo_state['selected_file_path'],delimiter=';',outdir='.',indir=os.getcwd() + '/',save_file=False)
+                    st.session_state.demo_state['df'] = log_csv_to_df(path=None, filtering_string=st.session_state.demo_state['filtering_string'],df=df)
+                    
+                elif extension == ".csv":
+                    st.session_state.demo_state['df'] = log_csv_to_df(st.session_state.demo_state['selected_file_path'], filtering_string=st.session_state.demo_state['filtering_string'])
 
             # Next, we initialize our Matrix Profile analyzer
             with st.spinner("Running Matrix Profile..."):
