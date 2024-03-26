@@ -22,9 +22,22 @@ from dateutil import parser
 import time
 import csv
 import re
-
+import time
+import concurrent.futures
+from functools import partial
+import multiprocessing
 
 log_format = '<Date> <Time> <Pid> <Level> <Component>: <Content>'
+
+
+def time_it(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        func(*args, **kwargs)
+        print(time.time()-start_time)
+    return wrapper
+
+
 
 def get_log_format(filename):
     benchmark_settings = {
@@ -125,7 +138,7 @@ def get_log_format(filename):
         "depth": 3,
     },
     "OpenSSH": {
-        "log_file": "OpenSSH/OpenSSH_2k.log",
+        "log_file": "OpenSSH/OpenSSH_2sk.log",
         "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
         "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
         "st": 0.6,
@@ -238,7 +251,45 @@ def get_parameter_list_generic(template, input_string):
       
     return parameters_without_preceding, parameters_with_preceding
     
-def parse_log_file(log_file_path, pattern=None, headers=None):
+
+
+def parse_log_chunk(chunk, pattern, headers, first_unix_time, template_miner):
+    # Initialize the template miner
+    # template_miner = TemplateMiner()
+
+    timestamps, pids, processes, log_texts, event_templates, original_logs, unix_times, parameters, parameters_wo, normalized_timestamps = [], [], [], [], [], [], [], [], [], []
+
+    for line in chunk:
+        try:
+            match = pattern.search(line.strip()) if pattern is not None else None
+            message = [match.group(header) for header in headers]
+            
+            content = message[-1]
+            result = template_miner.add_log_message(content)
+            print(result)
+            log_texts.append(result["template_mined"])
+            event_templates.append(result["cluster_id"])
+            original_logs.append(line)
+            
+            current_timestamp = detect_timestamp_format(line)
+            if current_timestamp:
+                current_unix_time = time.mktime(current_timestamp.timetuple())
+                unix_times.append(current_unix_time)
+                normalized_timestamps.append(current_unix_time - first_unix_time)
+            else:
+                unix_times.append(None)
+                normalized_timestamps.append(None)
+            
+            parameters_wo_categories,params_with_categories = get_parameter_list_generic(result["template_mined"], content)
+            parameters.append(params_with_categories)
+            parameters_wo.append(parameters_wo_categories)
+            timestamps.append(current_timestamp)
+        except Exception as e:
+            pass
+
+    return timestamps, log_texts, event_templates, original_logs, unix_times, normalized_timestamps, parameters, parameters_wo
+
+def parse_log_file(log_file_path, pattern=None, headers=None, chunk_size=10000):
     # Initialize the template miner
     template_miner = TemplateMiner()
 
@@ -246,7 +297,6 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
     with open(log_file_path, 'r') as file:
         log_lines = file.readlines()
 
-    # Detect timestamp format from the first line
     first_timestamp = detect_timestamp_format(log_lines[0])
     if first_timestamp is None:
         print("Error: Couldn't detect timestamp format from the first log line.")
@@ -254,62 +304,31 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
 
     first_unix_time = time.mktime(first_timestamp.timetuple())
 
-    # Define a regex pattern to extract timestamp, PID, and process name
-    # Adjust this pattern based on your log format
-    # log_format = '<Date> <Time> <Pid> <Level> <Component>: <Content>'
-    #pattern = re.compile(r'(?P<Time>[\d\-:\s]+)\s+(?P<Pid>\d+)\s+(?P<process>\w+)\s+(?P<Level>\w+)\s+(?P<Component>\w+):\s+(?P<Content>)')
+    # Split log lines into chunks
+    chunks = [log_lines[i:i+chunk_size] for i in range(0, len(log_lines), chunk_size)]
 
-    # Process each log line and store results in lists
-    timestamps, pids, processes, log_texts, event_templates, original_logs, unix_times, parameters, parameters_wo,normalized_timestamps = [], [], [], [], [], [], [], [], [], []
-    cnt = 0
-    log_messages = []
-    for line in log_lines:
-        # Extract fields using regex
-        cnt += 1
-        try:
-            match = pattern.search(line.strip()) if pattern is not None else None
-            message = [match.group(header) for header in headers]
-            log_messages.append(message)
-            if cnt == 20000000:
-                print(message)
-                cnt += 1
-        except Exception as e:
-                    # print("\n", line)
-                    # print(e)
-                pass
+    # Define a partial function for parsing a log chunk
+    parse_chunk_partial = partial(parse_log_chunk, pattern=pattern, headers=headers, first_unix_time=first_unix_time,template_miner=template_miner)
 
-        # Parse the log line using drain3
-        content = message[-1]
-        #print(f'content:{content}')
-        result = template_miner.add_log_message(content)
-        #print(result.keys())
-        # Extract desired fields
-        log_texts.append(result["template_mined"])
-        event_templates.append(result["cluster_id"])
-        original_logs.append(line)
+    # Process chunks in parallel
+    with multiprocessing.Pool() as pool:
+        results = pool.map(parse_chunk_partial, chunks)
 
-        # Convert timestamp to unix time
-        current_timestamp = detect_timestamp_format(line)
-        if current_timestamp:
-            current_unix_time = time.mktime(current_timestamp.timetuple())
-            unix_times.append(current_unix_time)
-            normalized_timestamps.append(current_unix_time - first_unix_time)
-        else:
-            unix_times.append(None)
-            normalized_timestamps.append(None)
+    # Combine results from all chunks
+    timestamps, log_texts, event_templates, original_logs, unix_times, normalized_timestamps, parameters, parameters_wo = zip(*results)
 
-        # Extract parameters
-        #params_with_categories = template_miner.extract_parameters(result["template_mined"], content)
-        parameters_wo_categories,params_with_categories = get_parameter_list_generic(result["template_mined"], content)
-        parameters.append(params_with_categories)
-        parameters_wo.append(parameters_wo_categories)
-        timestamps.append(current_timestamp)
-     
+    # Flatten lists
+    timestamps = [item for sublist in timestamps for item in sublist]
+    log_texts = [item for sublist in log_texts for item in sublist]
+    event_templates = [item for sublist in event_templates for item in sublist]
+    original_logs = [item for sublist in original_logs for item in sublist]
+    unix_times = [item for sublist in unix_times for item in sublist]
+    normalized_timestamps = [item for sublist in normalized_timestamps for item in sublist]
+    parameters = [item for sublist in parameters for item in sublist]
+    parameters_wo = [item for sublist in parameters_wo for item in sublist]
 
-    
     # Convert lists to DataFrame
     try:
-        logdf = pd.DataFrame(log_messages, columns=headers)
         df = pd.DataFrame({
             'Timestamp': timestamps,
             'Content': log_texts,
@@ -320,11 +339,11 @@ def parse_log_file(log_file_path, pattern=None, headers=None):
             'Parameters': parameters,
             'Parameters_without_categories': parameters_wo,
         })
-        df = pd.concat([df, logdf], axis=1)
-        #print(f'{len(log_messages)}')
+        print(f'{len(df)}')
+        print(df)
     except:
         df = None
-        print(f'length of arrays : {len(timestamps), len(processes), len(log_texts), len(event_templates), len(original_logs), len(unix_times), len(normalized_timestamps)}')
+        print("Error occurred during DataFrame creation.")
 
     return df
 
@@ -353,7 +372,8 @@ def is_csv_content(filename, delimiter=None):
     except csv.Error:
         return False
 
-def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',indir='.',save_file=True):
+@time_it
+def parse_log_file_from_file(logName='SSH.log', delimiter=',',outdir='.',indir='.'):
     
     logfileName = os.path.expanduser(indir) + logName
     if logfileName.lower().endswith('.csv'):
@@ -364,9 +384,7 @@ def parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=',',outdir='.',
         df = parse_log_file(logfileName, pattern=pattern, headers=headers)
         #print(df.head())
     
-        df.to_csv(os.path.join(outdir,logName + '_templates.csv'), index=True)
-        return df
-    
+    df.to_csv(os.path.join(outdir,logName + '_templates.csv'), index=True)
 
 # Example usage
 #log_file_path = "path_to_your_log_file.log"
@@ -375,7 +393,7 @@ if __name__ == '__main__':
 
    # indir = r'C:\Users\addeepak\Desktop\LogAnalysis\input_logs\\'
    # outdir = r'C:\Users\addeepak\Desktop\LogAnalysis\profile_figs\\'
-   indir = '.'
+   indir = './input_logs/'
    outdir = '.'
 
-   parse_log_file_from_file(logName='OpenSSH_2k.log', delimiter=';',outdir='.',indir=indir)
+   parse_log_file_from_file(logName='OpenSSH_2sk.log', delimiter=';',outdir='.',indir=indir)
